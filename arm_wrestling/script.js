@@ -1,6 +1,3 @@
-const gameCanvas = document.querySelector('#game_canvas')
-const lineCanvas = document.querySelector('#line_canvas')
-
 // Oyun için sabit değerleri tutan sınıf
 class Constants {
     static PI = Math.PI;
@@ -9,11 +6,22 @@ class Constants {
     static COLORS = ["#deeb34", "#ebc934", "#eb9f34", "#eb7434", "#eb3434"];
 }
 
+// verilen id üzerinden canvas değerine erişip initial değişkenleri oluşturan bir sınıf
+class Canvas {
+    constructor(canvasId) {
+        this.canvas = document.querySelector(canvasId);
+        if (!this.canvas) throw new Error(`${canvasId} ile canvas bulunamadı!`);
+        this.ctx = this.canvas.getContext('2d');
+        this.width = this.canvas.clientWidth;
+        this.height = this.canvas.clientHeight;
+        this.centerX = this.width / 2;
+        this.centerY = this.height / 2;
+        this.radius = (this.height / 2) - 1;
+    }
+}
+
 class Game {
     constructor(gameCanvas, lineCanvas) {
-        if (!gameCanvas || !lineCanvas) {
-            return alert("Oyun alanı bulunamadı")
-        }
         this.currentDegree = 0;
 
         this.gameCtx = gameCanvas.getContext('2d');
