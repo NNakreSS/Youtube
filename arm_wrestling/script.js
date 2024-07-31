@@ -1,11 +1,12 @@
 const gameCanvas = document.querySelector('#game_canvas')
 const lineCanvas = document.querySelector('#line_canvas')
 
-const CONSTANTS = {
-    PI: Math.PI,
-    CircleWidth: 20,
-    CircleDegree: 360,
-    Colors: ["#deeb34", "#ebc934", "#eb9f34", "#eb7434", "#eb3434"]
+// Oyun için sabit değerleri tutan sınıf
+class Constants {
+    static PI = Math.PI;
+    static CIRCLE_WIDTH = 20;
+    static CIRCLE_DEGREE = 360;
+    static COLORS = ["#deeb34", "#ebc934", "#eb9f34", "#eb7434", "#eb3434"];
 }
 
 class Game {
