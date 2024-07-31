@@ -20,23 +20,94 @@ class Canvas {
     }
 }
 
+// Çemberi çizen sınıf
+class Circle {
+    constructor(canvas) {
+        this.canvas = canvas;
+    }
+
+    // Ana çember çizim metodu
+    draw() {
+        this.#drawOuterCircle();
+        this.#drawInnerCircle();
+        this.#drawCenterDot();
+    }
+
+    // Dış çemberi çizer
+    #drawOuterCircle() {
+        this.#drawArc(this.canvas.radius, "black");
+    }
+
+    // İç çemberi çizer
+    #drawInnerCircle() {
+        this.#drawArc(this.canvas.radius - Constants.CIRCLE_WIDTH, "black");
+    }
+
+    // Merkez noktayı çizer
+    #drawCenterDot() {
+        this.canvas.ctx.beginPath();
+        this.canvas.ctx.arc(this.canvas.centerX, this.canvas.centerY, 5, 0, 2 * Constants.PI, false);
+        this.canvas.ctx.fill();
+        this.canvas.ctx.closePath();
+    }
+
+    // Yardımcı ark çizim metodu
+    #drawArc(radius, color) {
+        this.canvas.ctx.beginPath();
+        this.canvas.ctx.arc(this.canvas.centerX, this.canvas.centerY, radius, 0, 2 * Constants.PI, false);
+        this.canvas.ctx.strokeStyle = color;
+        this.canvas.ctx.stroke();
+        this.canvas.ctx.closePath();
+    }
+}
+
+// Dönen çizgiyi yöneten sınıf
+class Line {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.currentDegree = 0;
+    }
+
+    // Çizgiyi çizer
+    draw() {
+        const radian = this.#degreeToRadian(this.currentDegree);
+        const endX = this.canvas.centerX + this.canvas.radius * Math.cos(radian);
+        const endY = this.canvas.centerY + this.canvas.radius * Math.sin(radian);
+
+        this.canvas.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.canvas.ctx.beginPath();
+        this.canvas.ctx.moveTo(this.canvas.centerX, this.canvas.centerY);
+        this.canvas.ctx.lineTo(endX, endY);
+        this.canvas.ctx.strokeStyle = "black";
+        this.canvas.ctx.stroke();
+        this.canvas.ctx.closePath();
+    }
+
+    // Çizginin pozisyonunu günceller
+    update() {
+        this.currentDegree = (this.currentDegree + 1) % 360;
+        this.draw();
+    }
+
+    // Dereceyi radyana çevirir
+    #degreeToRadian(degree) {
+        return degree * (Constants.PI / 180);
+    }
+}
+
 class Game {
-    constructor(gameCanvas, lineCanvas) {
+    constructor(gameCanvasId, lineCanvasId) {
         this.currentDegree = 0;
 
-        this.gameCtx = gameCanvas.getContext('2d');
-        this.lineCtx = lineCanvas.getContext('2d');
+        this.gameCanvas = new Canvas(gameCanvasId);
+        this.lineCanvas = new Canvas(lineCanvasId);
 
-        this.canvasWidth = gameCanvas.clientWidth;
-        this.canvasHeight = gameCanvas.clientHeight
-
-        this.centerX = this.canvasWidth / 2;
-        this.centerY = this.canvasHeight / 2;
-        this.radius = (gameCanvas.clientHeight / 2) - 1;
+        this.circle = new Circle(this.gameCanvas);
+        this.line = new Line(this.lineCanvas);
     }
 
     start() {
-        this.#drawCircle()
+        // this.#drawCircle()
         this.drawLine()
         setInterval(() => {
             this.#updateLine()
@@ -48,24 +119,24 @@ class Game {
         })
     }
 
-    #drawCircle() {
-        this.gameCtx.beginPath();
-        this.gameCtx.arc(this.centerX, this.centerY, this.radius, 0, 2 * CONSTANTS.PI, false);
-        this.gameCtx.strokeStyle = "black";
-        this.gameCtx.stroke();
-        this.gameCtx.closePath();
-        // inner circle
-        this.gameCtx.beginPath();
-        this.gameCtx.arc(this.centerX, this.centerY, this.radius - CONSTANTS.CircleWidth, 0, 2 * CONSTANTS.PI, false);
-        this.gameCtx.strokeStyle = "black";
-        this.gameCtx.stroke();
-        this.gameCtx.closePath();
-        // dot
-        this.gameCtx.beginPath();
-        this.gameCtx.arc(this.centerX, this.centerY, 5, 0, 2 * CONSTANTS.PI, false);
-        this.gameCtx.fill();
-        this.gameCtx.closePath();
-    }
+    // #drawCircle() {
+    //     this.gameCtx.beginPath();
+    //     this.gameCtx.arc(this.centerX, this.centerY, this.radius, 0, 2 * CONSTANTS.PI, false);
+    //     this.gameCtx.strokeStyle = "black";
+    //     this.gameCtx.stroke();
+    //     this.gameCtx.closePath();
+    //     // inner circle
+    //     this.gameCtx.beginPath();
+    //     this.gameCtx.arc(this.centerX, this.centerY, this.radius - CONSTANTS.CircleWidth, 0, 2 * CONSTANTS.PI, false);
+    //     this.gameCtx.strokeStyle = "black";
+    //     this.gameCtx.stroke();
+    //     this.gameCtx.closePath();
+    //     // dot
+    //     this.gameCtx.beginPath();
+    //     this.gameCtx.arc(this.centerX, this.centerY, 5, 0, 2 * CONSTANTS.PI, false);
+    //     this.gameCtx.fill();
+    //     this.gameCtx.closePath();
+    // }
 
     drawLine() {
         const radian = getRadianToDegree(this.currentDegree);
